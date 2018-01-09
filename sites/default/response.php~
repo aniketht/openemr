@@ -3,13 +3,14 @@ include("sqlconf.php");
 
 $number = $_POST['From'];
 $body = $_POST['Body'];
-$parts = explode('/', $body);
+$int = preg_replace('/[^0-9]+/', '/', $body);
+$array = explode('/',$int);
 $dbhandle = mysql_connect($host, $login, $pass) or die("Unable to connect to MySQL");
 echo "Connected to MySQl";
 $selected = mysql_select_db($dbase) or die("Could not select examples");
 echo "database selected";
-$bps=$parts[0];
-$bpd=$parts[1];
+$bps=$array[1];
+$bpd=$array[2];
 $date = date('Y/m/d H:i:s');
 $result = mysql_query("select * from patient_data where phone_cell=".$number);
 $row = mysql_fetch_array($result);
