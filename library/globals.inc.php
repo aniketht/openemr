@@ -411,6 +411,15 @@ $GLOBALS_METADATA = array(
             '0',                              // default
             xl('Special treatment for the Vitals form')
         ),
+        'remote_patient' => array(
+            xl('Remote Patient Monitoring'),
+            array(
+                '0' => xl('Inactive'),
+                '1' => xl('Active'),
+            ),
+            '0',                              // default
+            xl('Remote Patient Monitoring')
+        ),
 
         'insurance_information' => array(
             xl('Show Additional Insurance Information'),               // descriptive name
@@ -735,6 +744,7 @@ $GLOBALS_METADATA = array(
             '0',                              // default = false
             xl('Omit employer information in patient demographics')
         ),
+        
 
         'select_multi_providers' => array(
             xl('Support Multi-Provider Events'),

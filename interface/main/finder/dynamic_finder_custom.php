@@ -20,6 +20,10 @@ $header0 = "";
 $header  = "";
 $coljson = "";
 $res = sqlStatement("SELECT DISTINCT fv.pid,fv.date,pd.fname,fv.bpd,fv.bps,pd.lname,pd.phone_cell,pd.id FROM form_vitals fv inner join patient_data pd on fv.pid=pd.id order by fv.date ");
+$gvalue=sqlStatement("SELECT * FROM globals WHERE gl_name='remote_patient'");
+$grow = sqlFetchArray($gvalue);
+
+$_SESSION['remote_patient']=$grow['gl_value'];
 while ($row = sqlFetchArray($res)) {
   
     //echo $row[fname];
@@ -42,7 +46,7 @@ while ($row = sqlFetchArray($res)) {
 							<th>Name</th>
 							<th>Phone Number</th>
 							<th>Unique Number</th>
-							<th>Latest data</th>
+							<th id="ldata">Latest data</th>
 							<th>Edit</th>
 							
 						</tr>
@@ -57,7 +61,7 @@ while ($row = sqlFetchArray($res)) {
                          while ($row = sqlFetchArray($res)) {
                            if(!isset($row["date"]))
                            {
-                           	$row["date"]="NA";
+                           	$row["date"]="<i style='color:red'>NA";
                             $NotifyButton='<a href="http://127.0.0.1:8000/interface/main/finder/patient_sms.php?phone_number='.$row['phone_cell'].' ">Notify</a>';
                            }
                            else{
@@ -91,7 +95,7 @@ while ($row = sqlFetchArray($res)) {
                                     <td>'.$row["fname"]." ".$row["lname"].'</td>  
                                     <td>'.$row["phone_cell"].'</td>  
                                     <td>'.$row["id"].'</td>  
-                                    <td>BP : '.$row["bps"].'/'.$row["bpd"]."        ". $row["date"]."  ".$NotifyButton.'</td>  
+                                    <td class="hidevalues">BP : '.$row["bps"].'/'.$row["bpd"]."        ". $row["date"]."  ".$NotifyButton.'</td>  
                                    <td><a href=../../patient_file/summary/demographics.php?set_pid='.$row["id"].' class="btn btn-default"  role="button">Edit Patient</a></td>
 							
                                </tr>  
@@ -129,7 +133,17 @@ $(document).ready(function() {
 function applyDataTable(){
  
  $(document).ready(function() {
+
     $('#example').DataTable();
+    localStorage.setItem('remote_patient', '<?php echo $_SESSION['remote_patient'];?>');
+    var remotevalue=localStorage.getItem('remote_patient');
+    if(remotevalue!=1)
+    {
+      
+      $(".hidevalues").hide();
+      $("#ldata").hide();
+     }
+     
 } );
 }
 

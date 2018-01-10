@@ -87,6 +87,12 @@ function updateBackgroundService($name, $active, $interval)
     . 'next_run = next_run + INTERVAL (? - execute_interval) MINUTE, execute_interval=? WHERE name=?';
     return sqlStatement($sql, array($active,$interval,$interval,$name));
 }
+function createtableBloodGlucose()
+{
+  sqlStatement("CREATE TABLE IF NOT EXISTS remote_patient_glucose(pid int(11),phone_number varchar(250),blood_glucose varchar(250),last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP )");
+
+}
+createtableBloodGlucose();
 
 /**
  * Make any necessary changes to background_services table when globals are saved.
@@ -151,6 +157,7 @@ if (array_key_exists('form_save', $_POST) && $_POST['form_save'] && $userMode) {
                     list($fldname, $fldtype, $flddef, $flddesc) = $fldarr;
                     $label = "global:".$fldid;
                     $fldvalue = trim($_POST["form_$i"]);
+
                     setUserSetting($label, $fldvalue, $_SESSION['authId'], false);
                     if ($_POST["toggle_$i"] == "YES") {
                         removeUserSetting($label);
@@ -242,6 +249,7 @@ if (array_key_exists('form_save', $_POST) && $_POST['form_save'] && !$userMode) 
     $old_globals = sqlGetAssoc('SELECT gl_name, gl_index, gl_value FROM `globals` ORDER BY gl_name, gl_index', false, true);
 
     $i = 0;
+
     foreach ($GLOBALS_METADATA as $grpname => $grparr) {
         foreach ($grparr as $fldid => $fldarr) {
             list($fldname, $fldtype, $flddef, $flddesc) = $fldarr;
@@ -360,7 +368,7 @@ input     { font-size:10pt; }
   function validate_file(){
     $.ajax({
       type: "POST",
-      url: "<?php echo $GLOBALS['webroot']?>/library/ajax/offsite_portal_ajax.php",
+      url: "<?php echo $GLOBALS['webroot']?>/library/ajax/offsite_portal_aja.php",
       data: {
     action: 'check_file',
       },
@@ -408,11 +416,13 @@ input     { font-size:10pt; }
 <?php
 $i = 0;
 foreach ($GLOBALS_METADATA as $grpname => $grparr) {
+
     if (!$userMode || in_array($grpname, $USER_SPECIFIC_TABS)) {
         echo " <li" . ($i ? "" : " class='current'") .
         "><a href='#'>" .
         xlt($grpname) . "</a></li>\n";
         ++$i;
+
     }
 }
 ?>
@@ -449,6 +459,7 @@ foreach ($GLOBALS_METADATA as $grpname => $grparr) {
 
                 // Most parameters will have a single value, but some will be arrays.
                 // Here we cater to both possibilities.
+                
                 $glres = sqlStatement("SELECT gl_index, gl_value FROM globals WHERE " .
                   "gl_name = ? ORDER BY gl_index", array($fldid));
                 $glarr = array();
@@ -471,7 +482,7 @@ foreach ($GLOBALS_METADATA as $grpname => $grparr) {
                         $settingDefault = "";
                     }
                 }
-
+                
                 echo " <tr $srch_cl title='" . attr($flddesc) . "'><td valign='top'><b>" . text($fldname) . "</b></td><td valign='top'>\n";
 
                 if (is_array($fldtype)) {
@@ -506,7 +517,9 @@ foreach ($GLOBALS_METADATA as $grpname => $grparr) {
                         }
                     }
 
+                              
                               echo "  <input type='checkbox' name='form_$i' id='form_$i' value='1'";
+                              
                     if ($fldvalue) {
                         echo " checked";
                     }

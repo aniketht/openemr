@@ -221,6 +221,7 @@ if (isset($_SESSION['app1'])) {
             $('#patient_caret').toggleClass('fa-caret-down').toggleClass('fa-caret-up');
         });
     });
+
 </script>
 </body>
 </html>

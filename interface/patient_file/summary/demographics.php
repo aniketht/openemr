@@ -718,6 +718,9 @@ if ($GLOBALS['patient_id_category_name']) {
           |
 
            <?php 
+           $gvalue=sqlStatement("SELECT * FROM globals WHERE gl_name='remote_patient'");
+           $grow = sqlFetchArray($gvalue);
+          
            sqlStatement("CREATE TABLE IF NOT EXISTS remote_patient_vital_alert_jobs(patient_id int(11) NOT NULL,collection_time varchar(250),phone_number varchar(250),request_type varchar(250),last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP )");
 
            $res = sqlStatement("SELECT * FROM form_vitals WHERE pid=".$pid);
@@ -740,11 +743,28 @@ if ($GLOBALS['patient_id_category_name']) {
                $_SESSION['bpd']=$bpd;
                 $_SESSION['dates']=$dates;
                 $_SESSION['id']=$pid;
+
+               $getGlucoseRecords=sqlStatement("SELECT * FROM remote_patient_glucose WHERE pid=".$pid);
+               $blood_glucose=array();
+               $blood_glucose_dates=array();
+               while ($Glucoserow = sqlFetchArray($getGlucoseRecords))
+            {
+               
+               array_push($blood_glucose,$Glucoserow['blood_glucose']);
+               array_push($blood_glucose_dates,$Glucoserow['last_seen']);
+               
+             }
+              $_SESSION['blood_glucose']=$blood_glucose;
+              $_SESSION['blood_glucose_dates']=$blood_glucose_dates;
+
+
+
+
             ?>
           <a href="../../reports/vital_report.php?obj=<?php print_r($vitalData)?>" onclick='top.restoreSession();vitaldata();'>
             
             
-            <?php echo xlt('Vitals Report'); 
+            <?php if($grow['gl_value'])echo xlt('Vitals Report'); 
   ?></a>
 
 
@@ -758,7 +778,8 @@ function vitaldata()
   localStorage.setItem('bps','<?php echo(json_encode( $_SESSION['bps'])); ?>' );
   localStorage.setItem('bpd','<?php echo(json_encode( $_SESSION['bpd'])); ?>' );
   localStorage.setItem('dates','<?php echo(json_encode( $_SESSION['dates'])); ?>' );
-  localStorage.setItem('id','<?php echo(json_encode( $_SESSION['id'])); ?>' );
+  localStorage.setItem('blood_glucose','<?php echo(json_encode( $_SESSION['blood_glucose'])); ?>' );
+  localStorage.setItem('blood_glucose_dates','<?php echo(json_encode( $_SESSION['blood_glucose_dates'])); ?>' );
 
 }
 </script>
