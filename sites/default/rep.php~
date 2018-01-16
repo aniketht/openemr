@@ -1,0 +1,20 @@
+<?php
+include("sqlconf.php");
+
+$number = $_POST['From'];
+$body = $_POST['Body'];
+
+$dbhandle = mysqli_connect($host, $login, $pass) or die("Unable to connect to MySQL");
+echo "Connected to MySQl";
+$selected = mysqli_select_db($dbhandle,$dbase) or die("Could not select examples");
+echo "database selected";
+$date = date('Y/m/d H:i:s');
+$pid=3;
+$bps=40;
+$bpd=70;
+$result = $dbhandle->prepare("insert into form_vitals(pid,bps,bpd,date) values (?,?,?,?)");
+$result->bind_param("isss",$pid,$bps,$bpd,$date);
+$result->execute();
+$result->close();
+?>
+

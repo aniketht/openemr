@@ -1,57 +1,7 @@
 <?php
-use Twilio\Rest\Client;
-require "Twilio/autoload.php";
+
 include("sqlconf.php");
-echo $host;
-$dbhandle = mysql_connect($host, $login, $pass) or die("Unable to connect to MySQL");
-echo "Connected to MySQl";
-$selected = mysql_select_db($dbase) or die("Could not select examples");
-echo "database selected";
-$result = mysql_query("SELECT DISTINCT fv.pid,fv.date,pd.fname,pd.lname,pd.phone_cell,pd.id FROM form_vitals fv inner join patient_data pd on fv.pid=pd.id order by fv.date");
-$AccountSid = "AC0ba4c3fb206a1966f9c21f5657f30fe";
-$AuthToken = "6e47e8cfac4587692dc207f9ee5e4a9a";
-while ($row = mysql_fetch_array($result)) {
-   echo $row['phone_cell'];
-
-    
-    
-    
-    // //$row['phone_cell'] => $row['fname']
-    
-  
-    
-    $client = new Client($AccountSid, $AuthToken);
-
-   
-    $people = array(
-       
-       $row['phone_cell'] => $row['fname'],
-        
-    );
-
-    
-    foreach ($people as $number => $name) {
-
-        $sms = $client->account->messages->create(
-
-            
-            $number,
-
-            array(
-                
-                'from' => "+19095808858", 
-                
-                
-                'body' => "Hey $name, Please submit your blood pressure records"
-            )
-        );
-
-      
-    }
-   echo "<h2> Notify patient successfully</h2>";
-
-}
-
-
-
+include("../../services/RemotePatientService.php");
+$RemotePatient = new RemotePatientService();
+echo $RemotePatient->SendSMSPatient($host, $login, $pass,$dbase);
 ?>

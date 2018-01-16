@@ -1,27 +1,41 @@
 <?php
 require_once("../globals.php");
-echo $_POST['time'];
-echo $_POST['type'];
-echo $_POST['id'];
+
 $time=$_POST['time'];
 $type=$_POST['type'];
 $id=$_POST['id'];
 $test= date('m/d/Y h:i:s a', time());
 
+
+$bps=explode(",",$_POST['item']);
+
+$bps=explode(",",$_POST['bps']);
+
+$bpd=explode(",",$_POST['bpd']);
+
+$dates=explode(",",$_POST['dates']);
+$blood_glucose=explode(",",$_POST['blood_glucose']);
+$blood_glucose_dates=explode(",",$_POST['blood_glucose_dates']);;
+
+$_SESSION['bps']=$bps;
+$_SESSION['bpd']=$bpd;
+$_SESSION['dates']=$dates;
+$_SESSION['blood_glucose']=$blood_glucose;
+$_SESSION['blood_glucose_dates']=$blood_glucose_dates;
+
 $currentTime=(new DateTime($test))->format("H");
-echo "current time".$currentTime;
 if(isset($id))
 {
 $phone_number=sqlStatement("select phone_cell from patient_data where id=".$id);
 $row = sqlFetchArray($phone_number);
 
-sqlStatement("INSERT INTO remote_patient_vital_alert_jobs(patient_id, collection_time,phone_number,request_type) VALUES ('{$_POST[id]}', '{$_POST[time]}','{$row[phone_cell]}','{$_POST[type]}')");
+sqlStatement("INSERT INTO remote_patient_vital_alert_jobs(patient_id, collection_time,phone_number,request_type) VALUES (?, ?,?,?)",array($_POST[id],$_POST[time],$row[phone_cell],$_POST[type]));
 $getResponse=sqlStatement("select * from remote_patient_vital_alert_jobs");
 while($eachrow = sqlFetchArray($getResponse))
 {
      if($eachrow['collection_time']==$currentTime)
      {
-        echo "ids==>".$eachrow['patient_id'];
+        
      }
 
 }
@@ -56,7 +70,7 @@ else
     <div class="form-group col-sm-3 ">
       <label for="time">Collection Time</label>
       <span class="input">
-      <select class="form-control" id="time"  >
+      <select class="form-control" name="time" id="time"  >
   <option value="0">00</option>
   <option value="1">01</option>
   <option value="2">02</option>
@@ -119,13 +133,16 @@ function rows2cols(a) {
 }
 
 
+
+
+var bps=JSON.parse(localStorage.getItem('bps')).map(Number);
 var dates=JSON.parse(localStorage.getItem('dates'));
 var blood_glucose_dates=JSON.parse(localStorage.getItem('blood_glucose_dates'));
 console.log("blood_glucose_dates",blood_glucose_dates);
- var bps=JSON.parse(localStorage.getItem('bps')).map(Number);
-
+// var bps=JSON.parse(localStorage.getItem('bps')).map(Number);
+//console.log("bps===",bps);
  var bpd=JSON.parse(localStorage.getItem('bpd')).map(Number);
-
+console.log("bpd===",bpd);
   var blood_glucose=JSON.parse(localStorage.getItem('blood_glucose')).map(Number);
   console.log("blood_glucose on storage",blood_glucose);
  var glucose=[];
@@ -181,6 +198,7 @@ console.log("final Glucosearr",Glucosearr);
 
 </html>
 <script type="text/javascript">
-   localStorage.setItem("vital",'<?php print_r($_POST['obj']);?>');
-  
+document.getElementById('id').value=localStorage.getItem('userid');
+
 </script>
+

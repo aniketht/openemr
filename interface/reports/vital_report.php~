@@ -1,13 +1,32 @@
 <?php
 require_once("../globals.php");
-
+echo $_POST['time'];
+echo $_POST['type'];
+echo $_POST['id'];
 $time=$_POST['time'];
 $type=$_POST['type'];
 $id=$_POST['id'];
 $test= date('m/d/Y h:i:s a', time());
 
-$currentTime=(new DateTime($test))->format("H");
 
+$bps=$_POST['item'];
+
+$bps=$_POST['bps'];
+
+$bps=$_POST['bpd'];
+
+$dates=$_POST['dates'];
+$blood_glucose=$_POST['blood_glucose'];
+$blood_glucose_dates=$_POST['blood_glucose_dates'];
+
+$_SESSION['bps']=$bps;
+$_SESSION['bpd']=$bpd;
+$_SESSION['dates']=$dates;
+$_SESSION['blood_glucose']=$blood_glucose;
+$_SESSION['blood_glucose_dates']=$blood_glucose_dates;
+
+$currentTime=(new DateTime($test))->format("H");
+echo "current time".$currentTime;
 if(isset($id))
 {
 $phone_number=sqlStatement("select phone_cell from patient_data where id=".$id);
@@ -36,17 +55,25 @@ else
 <head>
 <script type="text/javascript"
   src="https://cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.js"></script>
+  <link href="http://cdn.rawgit.com/davidstutz/bootstrap-multiselect/master/dist/css/bootstrap-multiselect.css"
+    rel="stylesheet" type="text/css" />
+<script src="http://cdn.rawgit.com/davidstutz/bootstrap-multiselect/master/dist/js/bootstrap-multiselect.js"></script>
 <link rel="stylesheet" src="https://cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.css" />
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
 </head>
 <title>Gia Barclay</title>
 <body>
 <form method="post" name="vital_form" action="../reports/vital_report.php">
 
-    <div class="form-group col-sm-3">
+    <div class="form-group col-sm-3 ">
       <label for="time">Collection Time</label>
-      <select class="form-control" id="time" name="time">
+      <span class="input">
+      <select class="form-control" id="time"  >
   <option value="0">00</option>
   <option value="1">01</option>
   <option value="2">02</option>
@@ -86,6 +113,9 @@ else
   </form>
 
 <div id="graphdiv2" style="width: 500px; height: 400px;position: absolute;top: 0;bottom: 0;left: 0;right: 0;margin: auto;"></div>
+<br>
+<div id="graphdiv3" style="width: 500px; height: 400px;margin-top:450px;margin-left: 400px;"></div>
+<!-- <div id="graphdiv3" style="width: 500px; height: 400px;"></div> -->
 <script type="text/javascript">
 document.vital_form.id.value=localStorage.getItem('id');
 function rows2cols(a) {
@@ -106,12 +136,22 @@ function rows2cols(a) {
 }
 
 
+
+
+
 var dates=JSON.parse(localStorage.getItem('dates'));
-console.log(dates);
+var blood_glucose_dates=JSON.parse(localStorage.getItem('blood_glucose_dates'));
+console.log("blood_glucose_dates",blood_glucose_dates);
  var bps=JSON.parse(localStorage.getItem('bps')).map(Number);
 
  var bpd=JSON.parse(localStorage.getItem('bpd')).map(Number);
- 
+
+  var blood_glucose=JSON.parse(localStorage.getItem('blood_glucose')).map(Number);
+  console.log("blood_glucose on storage",blood_glucose);
+ var glucose=[];
+ glucose.push(blood_glucose);
+ console.log("blood_glucose array",glucose);
+
   var grid=[];
   grid.push(bps);
    grid.push(bpd);
@@ -122,6 +162,17 @@ for(var i=0;i<arr.length;i++)
 {
 	arr[i].unshift(new Date(dates[i]));
 }
+
+var Glucosearr = Object.keys(rows2cols(glucose)).map(function (key) { return rows2cols(glucose)[key]; });
+console.log("glucose==>",Glucosearr);
+for(var i=0;i<Glucosearr.length;i++)
+ {
+   Glucosearr[i].unshift(new Date(blood_glucose_dates[i]));
+}
+console.log("final Glucosearr",Glucosearr);
+
+
+
   new Dygraph(document.getElementById("graphdiv2"),
               arr,
               {
@@ -133,10 +184,23 @@ for(var i=0;i<arr.length;i++)
                 
                  
               });
+   new Dygraph(document.getElementById("graphdiv3"),
+            
+            Glucosearr,
+              {
+                drawPoints: true,
+                connectSeparatedPoints: true,
+                labels: [ "index","Blood Glucose"],
+                animatedZooms: true,
+                highlightCircleSize: 5
+                
+                 
+              });
 </script>
 </body>
 
 </html>
 <script type="text/javascript">
    localStorage.setItem("vital",'<?php print_r($_POST['obj']);?>');
+  
 </script>

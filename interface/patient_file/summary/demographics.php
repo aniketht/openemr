@@ -739,10 +739,10 @@ if ($GLOBALS['patient_id_category_name']) {
                 array_push($dates,$row['date']);
              }
              $_SESSION['pp']=$vitalData;
-              $_SESSION['bps']=$bps;
-               $_SESSION['bpd']=$bpd;
-                $_SESSION['dates']=$dates;
-                $_SESSION['id']=$pid;
+             $_SESSION['bps']=$bps;
+             $_SESSION['bpd']=$bpd;
+             $_SESSION['dates']=$dates;
+             $_SESSION['id']=$pid;
 
                $getGlucoseRecords=sqlStatement("SELECT * FROM remote_patient_glucose WHERE pid=".$pid);
                $blood_glucose=array();
@@ -757,8 +757,12 @@ if ($GLOBALS['patient_id_category_name']) {
               $_SESSION['blood_glucose']=$blood_glucose;
               $_SESSION['blood_glucose_dates']=$blood_glucose_dates;
 
-
-
+            $item=implode(",",$_SESSION['pp']);
+            $bps=implode(",",$_SESSION['bps']);
+            $bpd=implode(",",$_SESSION['bpd']);
+            $dates=implode(",",$_SESSION['dates']);
+            $blood_glucose=implode(",",$_SESSION['blood_glucose']);
+            $blood_glucose_dates=implode(",",$_SESSION['blood_glucose_dates']);
 
             ?>
           <a href="../../reports/vital_report.php?obj=<?php print_r($vitalData)?>" onclick='top.restoreSession();vitaldata();'>
@@ -778,11 +782,13 @@ function vitaldata()
   localStorage.setItem('bps','<?php echo(json_encode( $_SESSION['bps'])); ?>' );
   localStorage.setItem('bpd','<?php echo(json_encode( $_SESSION['bpd'])); ?>' );
   localStorage.setItem('dates','<?php echo(json_encode( $_SESSION['dates'])); ?>' );
+  localStorage.setItem('userid','<?php echo(json_encode( $_SESSION['id'])); ?>' );
   localStorage.setItem('blood_glucose','<?php echo(json_encode( $_SESSION['blood_glucose'])); ?>' );
   localStorage.setItem('blood_glucose_dates','<?php echo(json_encode( $_SESSION['blood_glucose_dates'])); ?>' );
 
 }
-</script>
+</script> 
+
 <?php
     $module_query = sqlStatement("SELECT msh.*,ms.obj_name,ms.menu_name,ms.path,m.mod_ui_name,m.type FROM modules_hooks_settings AS msh
 					LEFT OUTER JOIN modules_settings AS ms ON obj_name=enabled_hooks AND ms.mod_id=msh.mod_id

@@ -27,6 +27,7 @@ $header0 = "";
 $header  = "";
 $coljson = "";
 $cellNumber='+'.$_GET['phone_number'];
+$patientNumber = str_replace(' ', '', $cellNumber);
 
 
 
@@ -36,7 +37,7 @@ $cellNumber='+'.$_GET['phone_number'];
    
     $people = array(
        
-       $cellNumber => 'user',
+       $patientNumber => 'user',
         
     );
 
@@ -59,7 +60,7 @@ $cellNumber='+'.$_GET['phone_number'];
 
       
     }
-   echo "<h2> Notify patient successfully</h2>";
+   echo "<h2> Notify patient successfully</h2>".$number;
 
     
 

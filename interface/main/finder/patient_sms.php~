@@ -13,36 +13,31 @@ require "Twilio/autoload.php";
 
 require_once(dirname(__FILE__) ."/../../globals.php");
 
-$AccountSid = "AC0ba4c3fb206a1966f9c21f5657f30fe9";
-$AuthToken = "6e47e8cfac4587692dc207f9ee5e4a9a";
+$AccountSid = "AC7067cb055c712a625ead0fde5618d876";
+$AuthToken = "70d578bdc97028bffa482e67174d3ef0";
 $popup = empty($_REQUEST['popup']) ? 0 : 1;
 
 // Generate some code based on the list of columns.
 //
-echo ($_SESSION['site_id'])."==";
+
 $glrow = sqlQuery("SELECT * FROM  form_vitals");
-print_r($glrow);
+
 $colcount = 0;
 $header0 = "";
 $header  = "";
 $coljson = "";
-$res = sqlStatement("SELECT DISTINCT fv.pid,fv.date,pd.fname,pd.lname,pd.phone_cell,pd.id FROM form_vitals fv inner join patient_data pd on fv.pid=pd.id order by fv.date ");
-while ($row = sqlFetchArray($res)) {
-  
-    
-  
-    
-    
-    // //$row['phone_cell'] => $row['fname']
-    
-  
-    
+$cellNumber='+'.$_GET['phone_number'];
+$patientNumber = str_replace(' ', '', $cellNumber);
+
+
+
+
     $client = new Client($AccountSid, $AuthToken);
 
    
     $people = array(
        
-       '3432234' => $row['fname'],
+       $patientNumber => 'user',
         
     );
 
@@ -56,19 +51,19 @@ while ($row = sqlFetchArray($res)) {
 
             array(
                 
-                'from' => "+19095808858", 
+                'from' => "+14129064618", 
                 
                 
-                'body' => "Hey $name, Please submit your blood pressure records"
+                'body' => "Hey , Please submit your blood pressure records"
             )
         );
 
       
     }
-   echo "<h2> Notify patient successfully</h2>";
+   echo "<h2> Notify patient successfully</h2>".$number;
 
     
-}
+
 
 ?>
 
