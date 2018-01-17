@@ -14,16 +14,15 @@ class RemotePatientService
     {
    
     }
-    public function SendSMSPatient($host,$login,$pass,$dbase)
+    public function SendSMSPatient()
     {
-       $dbhandle = mysql_connect($host, $login, $pass) or die("Unable to connect to MySQL");
-       $selected = mysql_select_db($dbase) or die("Could not select examples");
+     
        $test= date('m/d/Y h:i:s a', time());
        $currentTime=(new DateTime($test))->format("H");
-       $result = mysql_query("select * from remote_patient_vital_alert_jobs");
+       $result = SqlStatement("select * from remote_patient_vital_alert_jobs");
        $AccountSid = "AC7067cb055c712a625ead0fde5618d876";
        $AuthToken = "70d578bdc97028bffa482e67174d3ef0";
-       while ($row = mysql_fetch_array($result)) {
+       while ($row = sqlFetchArray($result)) {
    
          $client = new Client($AccountSid, $AuthToken);
          echo "Current collection time".$currentTime;
@@ -63,10 +62,9 @@ class RemotePatientService
 
 
  }
-    public function PatientSMSreply($host, $login, $pass,$dbase,$number,$body)
+    public function PatientSMSreply($number,$body)
     {
-      $dbhandle = mysqli_connect($host, $login, $pass) or die("Unable to connect to MySQL");
-      $selected = mysqli_select_db($dbhandle,$dbase) or die("Could not select examples");
+      
       $lenght=explode('/',$body);
       $space=explode(' ',$body);
       $int = preg_replace('/[^0-9]+/', '/', $body);
@@ -85,29 +83,31 @@ class RemotePatientService
      }
      
      $date = date('Y/m/d H:i:s');
-     $result = mysqli_query($dbhandle,"select * from patient_data where phone_cell=".$number);
+     $result = SqlStatement("select * from patient_data where phone_cell=".$number);
      
-     $row = mysqli_fetch_array($result);
+     $row = sqlFetchArray($result);
     
      $pid=$row['id'];
      
      if(isset($bps) && isset($bpd))
      {
 
-       $result = $dbhandle->prepare("insert into form_vitals(pid,bps,bpd,date) values (?,?,?,?)");
-       $result->bind_param("isss",$pid,$bps,$bpd,$date);
-       $result->execute();
-       $result->close();
+       $sql="insert into form_vitals set pid=?,bps=?,bpd=?,date=?";
+       $result = SqlStatement($sql,array($pid,$bps,$bpd,$date));
+      
       }
     if(!isset($bps) && !isset($bpd) || isset($bps) && !isset($bpd))
      {
        
         $getglucse = preg_replace('/[^0-9]+/', '', $body);
         echo  $getglucse;
-        $result = $dbhandle->prepare("insert into remote_patient_glucose(pid,phone_number,blood_glucose,last_seen) values(?, ?,?,?)");
-        $result->bind_param("isss",$pid,$number,$getglucse,$date);
-        $result->execute();
-        $result->close();
+        $bloodsuger=SqlStatement(" select blood_glucose  from form_vitals");
+        if(!isset($bloodsuger)){
+        SqlStatement("ALTER TABLE form_vitals ADD blood_glucose VARCHAR(255);");
+        }
+        $sql="insert into form_vitals set pid=?,blood_glucose=?,date=?";
+        $result = SqlStatement($sql,array($pid,$getglucse,$date));
+        
      }
 
  }

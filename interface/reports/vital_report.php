@@ -5,23 +5,13 @@ $time=$_POST['time'];
 $type=$_POST['type'];
 $id=$_POST['id'];
 $test= date('m/d/Y h:i:s a', time());
-
-
-$bps=explode(",",$_POST['item']);
-
-$bps=explode(",",$_POST['bps']);
-
-$bpd=explode(",",$_POST['bpd']);
-
-$dates=explode(",",$_POST['dates']);
-$blood_glucose=explode(",",$_POST['blood_glucose']);
-$blood_glucose_dates=explode(",",$_POST['blood_glucose_dates']);;
-
-$_SESSION['bps']=$bps;
-$_SESSION['bpd']=$bpd;
-$_SESSION['dates']=$dates;
-$_SESSION['blood_glucose']=$blood_glucose;
-$_SESSION['blood_glucose_dates']=$blood_glucose_dates;
+session_start();
+$_SESSION['bps'];
+$_SESSION['bpd'];
+$_SESSION['dates'];
+$_SESSION['id'];
+$_SESSION['blood_glucose'];
+$_SESSION['blood_glucose_dates'];
 
 $currentTime=(new DateTime($test))->format("H");
 if(isset($id))
@@ -135,15 +125,15 @@ function rows2cols(a) {
 
 
 
-var bps=JSON.parse(localStorage.getItem('bps')).map(Number);
-var dates=JSON.parse(localStorage.getItem('dates'));
-var blood_glucose_dates=JSON.parse(localStorage.getItem('blood_glucose_dates'));
+var bps=JSON.parse('<?php echo(json_encode($_SESSION['bps'])); ?>').map(Number);
+var dates=JSON.parse('<?php echo(json_encode($_SESSION['dates'])); ?>');
+var blood_glucose_dates=JSON.parse('<?php echo(json_encode($_SESSION['blood_glucose_dates'])); ?>');
 console.log("blood_glucose_dates",blood_glucose_dates);
 // var bps=JSON.parse(localStorage.getItem('bps')).map(Number);
 //console.log("bps===",bps);
- var bpd=JSON.parse(localStorage.getItem('bpd')).map(Number);
+ var bpd=JSON.parse('<?php echo(json_encode($_SESSION['bpd'])); ?>').map(Number);
 console.log("bpd===",bpd);
-  var blood_glucose=JSON.parse(localStorage.getItem('blood_glucose')).map(Number);
+  var blood_glucose=JSON.parse('<?php echo(json_encode($_SESSION['blood_glucose'])); ?>').map(Number);
   console.log("blood_glucose on storage",blood_glucose);
  var glucose=[];
  glucose.push(blood_glucose);
@@ -157,7 +147,7 @@ var arr = Object.keys(rows2cols(grid)).map(function (key) { return rows2cols(gri
 console.log("arr",arr);
 for(var i=0;i<arr.length;i++)
 {
-	arr[i].unshift(new Date(dates[i]));
+  arr[i].unshift(new Date(dates[i]));
 }
 
 var Glucosearr = Object.keys(rows2cols(glucose)).map(function (key) { return rows2cols(glucose)[key]; });
@@ -198,7 +188,7 @@ console.log("final Glucosearr",Glucosearr);
 
 </html>
 <script type="text/javascript">
-document.getElementById('id').value=localStorage.getItem('userid');
+document.getElementById('id').value='<?php echo $_SESSION['id'];?>';
 
 </script>
 

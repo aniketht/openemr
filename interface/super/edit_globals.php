@@ -87,12 +87,12 @@ function updateBackgroundService($name, $active, $interval)
     . 'next_run = next_run + INTERVAL (? - execute_interval) MINUTE, execute_interval=? WHERE name=?';
     return sqlStatement($sql, array($active,$interval,$interval,$name));
 }
-function createtableBloodGlucose()
-{
-  sqlStatement("CREATE TABLE IF NOT EXISTS remote_patient_glucose(pid int(11),phone_number varchar(250),blood_glucose varchar(250),last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP )");
+// function createtableBloodGlucose()
+// {
+//   sqlStatement("CREATE TABLE IF NOT EXISTS remote_patient_glucose(pid int(11),phone_number varchar(250),blood_glucose varchar(250),last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP )");
 
-}
-createtableBloodGlucose();
+// }
+// createtableBloodGlucose();
 
 /**
  * Make any necessary changes to background_services table when globals are saved.

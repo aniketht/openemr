@@ -738,24 +738,28 @@ if ($GLOBALS['patient_id_category_name']) {
                 array_push($bpd,$row['bpd']);
                 array_push($dates,$row['date']);
              }
+             session_start();
              $_SESSION['pp']=$vitalData;
              $_SESSION['bps']=$bps;
              $_SESSION['bpd']=$bpd;
              $_SESSION['dates']=$dates;
              $_SESSION['id']=$pid;
 
-               $getGlucoseRecords=sqlStatement("SELECT * FROM remote_patient_glucose WHERE pid=".$pid);
+               $getGlucoseRecords=sqlStatement("SELECT * FROM form_vitals WHERE pid=".$pid);
                $blood_glucose=array();
                $blood_glucose_dates=array();
                while ($Glucoserow = sqlFetchArray($getGlucoseRecords))
-            {
+              {
+               if(isset($Glucoserow['blood_glucose']))
+               {
+                 array_push($blood_glucose,$Glucoserow['blood_glucose']);
+                 array_push($blood_glucose_dates,$Glucoserow['date']);
+               }
                
-               array_push($blood_glucose,$Glucoserow['blood_glucose']);
-               array_push($blood_glucose_dates,$Glucoserow['last_seen']);
-               
-             }
+              }
               $_SESSION['blood_glucose']=$blood_glucose;
               $_SESSION['blood_glucose_dates']=$blood_glucose_dates;
+           
 
             $item=implode(",",$_SESSION['pp']);
             $bps=implode(",",$_SESSION['bps']);
@@ -773,21 +777,7 @@ if ($GLOBALS['patient_id_category_name']) {
 
 
 <!-- DISPLAYING HOOKS STARTS HERE -->
-<script type="text/javascript">
-function vitaldata()
-{
-  
-  localStorage.removeItem('item');
-  localStorage.setItem('item','<?php echo(json_encode( $_SESSION['pp'])); ?>' );
-  localStorage.setItem('bps','<?php echo(json_encode( $_SESSION['bps'])); ?>' );
-  localStorage.setItem('bpd','<?php echo(json_encode( $_SESSION['bpd'])); ?>' );
-  localStorage.setItem('dates','<?php echo(json_encode( $_SESSION['dates'])); ?>' );
-  localStorage.setItem('userid','<?php echo(json_encode( $_SESSION['id'])); ?>' );
-  localStorage.setItem('blood_glucose','<?php echo(json_encode( $_SESSION['blood_glucose'])); ?>' );
-  localStorage.setItem('blood_glucose_dates','<?php echo(json_encode( $_SESSION['blood_glucose_dates'])); ?>' );
 
-}
-</script> 
 
 <?php
     $module_query = sqlStatement("SELECT msh.*,ms.obj_name,ms.menu_name,ms.path,m.mod_ui_name,m.type FROM modules_hooks_settings AS msh

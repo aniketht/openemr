@@ -56,7 +56,7 @@ while ($row = sqlFetchArray($res)) {
 
 					<tbody>
 						<?php
-						 $res = sqlStatement("select distinct pd.id,fv.date,pd.fname,fv.bpd,fv.bps,pd.lname,pd.phone_cell from patient_data pd left outer join form_vitals fv on fv.pid=pd.id and fv.date=(select max(fv.date) From form_vitals fv where fv.pid=pd.id);");
+						 $res = sqlStatement("select distinct pd.id,fv.date,pd.fname,fv.bpd,fv.bps,pd.lname,pd.phone_cell from patient_data pd left outer join form_vitals fv on fv.pid=pd.id and fv.date=(select max(fv.date) From form_vitals fv where fv.pid=pd.id AND fv.bps!='NULL' AND fv.bpd!='NULL');");
                         
                          while ($row = sqlFetchArray($res)) {
                            if(!isset($row["date"]))
