@@ -5,14 +5,35 @@ $time=$_POST['time'];
 $type=$_POST['type'];
 $id=$_POST['id'];
 $test= date('m/d/Y h:i:s a', time());
-session_start();
-$_SESSION['bps'];
-$_SESSION['bpd'];
-$_SESSION['dates'];
-$_SESSION['id'];
-$_SESSION['blood_glucose'];
-$_SESSION['blood_glucose_dates'];
-
+$pid=$_GET['pid'];
+$res = sqlStatement("SELECT * FROM form_vitals WHERE pid=".$pid);
+$bps=array();
+$bpd=array();
+$dates=array();
+$book = new stdClass;
+while ($row = sqlFetchArray($res))
+{ 
+  array_push($vitalData,$row);
+  $books = (object) $row;
+  array_push($bps,$row['bps']);
+  array_push($bpd,$row['bpd']);
+  array_push($dates,$row['date']);
+}
+$getGlucoseRecords=sqlStatement("SELECT * FROM form_vitals WHERE pid=".$pid);
+$blood_glucose=array();
+$blood_glucose_dates=array();
+while ($Glucoserow = sqlFetchArray($getGlucoseRecords))
+{
+    if(isset($Glucoserow['blood_glucose']))
+    {
+      array_push($blood_glucose,$Glucoserow['blood_glucose']);
+      array_push($blood_glucose_dates,$Glucoserow['date']);
+    }
+               
+}
+$blood_glucose;
+$blood_glucose_dates;
+          
 $currentTime=(new DateTime($test))->format("H");
 if(isset($id))
 {
@@ -55,7 +76,7 @@ else
 </head>
 <title>Gia Barclay</title>
 <body>
-<form method="post" name="vital_form" action="../reports/vital_report.php">
+<form method="post" name="vital_form" action="../reports/vital_report.php?pid=<?php echo $pid; ?>">
 
     <div class="form-group col-sm-3 ">
       <label for="time">Collection Time</label>
@@ -125,15 +146,15 @@ function rows2cols(a) {
 
 
 
-var bps=JSON.parse('<?php echo(json_encode($_SESSION['bps'])); ?>').map(Number);
-var dates=JSON.parse('<?php echo(json_encode($_SESSION['dates'])); ?>');
-var blood_glucose_dates=JSON.parse('<?php echo(json_encode($_SESSION['blood_glucose_dates'])); ?>');
+var bps=JSON.parse('<?php echo(json_encode($bps)); ?>').map(Number);
+var dates=JSON.parse('<?php echo(json_encode($dates)); ?>');
+var blood_glucose_dates=JSON.parse('<?php echo(json_encode($blood_glucose_dates)); ?>');
 console.log("blood_glucose_dates",blood_glucose_dates);
 // var bps=JSON.parse(localStorage.getItem('bps')).map(Number);
 //console.log("bps===",bps);
- var bpd=JSON.parse('<?php echo(json_encode($_SESSION['bpd'])); ?>').map(Number);
+ var bpd=JSON.parse('<?php echo(json_encode($bpd)); ?>').map(Number);
 console.log("bpd===",bpd);
-  var blood_glucose=JSON.parse('<?php echo(json_encode($_SESSION['blood_glucose'])); ?>').map(Number);
+  var blood_glucose=JSON.parse('<?php echo(json_encode($blood_glucose)); ?>').map(Number);
   console.log("blood_glucose on storage",blood_glucose);
  var glucose=[];
  glucose.push(blood_glucose);
@@ -188,7 +209,8 @@ console.log("final Glucosearr",Glucosearr);
 
 </html>
 <script type="text/javascript">
-document.getElementById('id').value='<?php echo $_SESSION['id'];?>';
+document.getElementById('id').value='<?php echo $pid;?>';
 
 </script>
+
 

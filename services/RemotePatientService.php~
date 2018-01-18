@@ -102,8 +102,26 @@ class RemotePatientService
         $getglucse = preg_replace('/[^0-9]+/', '', $body);
         echo  $getglucse;
         
+        if($getglucse && strlen($getglucse) < 4)
+        {
         $sql="insert into form_vitals set pid=?,blood_glucose=?,date=?";
         $result = SqlStatement($sql,array($pid,$getglucse,$date));
+        }
+        else
+        {
+          ?><Response>
+               <Message>
+                These are following acceptable response format
+                blood glucose :124,
+                blood pressure : 120/80,
+                bp:120/80,
+                120/80,
+                124,
+                </Message>
+              </Response>
+
+            <?php    
+        }
         
      }
 

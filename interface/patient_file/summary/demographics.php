@@ -723,53 +723,9 @@ if ($GLOBALS['patient_id_category_name']) {
           
            sqlStatement("CREATE TABLE IF NOT EXISTS remote_patient_vital_alert_jobs(patient_id int(11) NOT NULL,collection_time varchar(250),phone_number varchar(250),request_type varchar(250),last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP )");
 
-           $res = sqlStatement("SELECT * FROM form_vitals WHERE pid=".$pid);
-            $vitalData=array();
-            $bps=array();
-            $bpd=array();
-            $dates=array();
-            $book = new stdClass;
-           while ($row = sqlFetchArray($res))
-            { array_push($vitalData,$row);
-              
-               $books = (object) $row;
-               
-               array_push($bps,$row['bps']);
-                array_push($bpd,$row['bpd']);
-                array_push($dates,$row['date']);
-             }
-             session_start();
-             $_SESSION['pp']=$vitalData;
-             $_SESSION['bps']=$bps;
-             $_SESSION['bpd']=$bpd;
-             $_SESSION['dates']=$dates;
-             $_SESSION['id']=$pid;
-
-               $getGlucoseRecords=sqlStatement("SELECT * FROM form_vitals WHERE pid=".$pid);
-               $blood_glucose=array();
-               $blood_glucose_dates=array();
-               while ($Glucoserow = sqlFetchArray($getGlucoseRecords))
-              {
-               if(isset($Glucoserow['blood_glucose']))
-               {
-                 array_push($blood_glucose,$Glucoserow['blood_glucose']);
-                 array_push($blood_glucose_dates,$Glucoserow['date']);
-               }
-               
-              }
-              $_SESSION['blood_glucose']=$blood_glucose;
-              $_SESSION['blood_glucose_dates']=$blood_glucose_dates;
            
-
-            $item=implode(",",$_SESSION['pp']);
-            $bps=implode(",",$_SESSION['bps']);
-            $bpd=implode(",",$_SESSION['bpd']);
-            $dates=implode(",",$_SESSION['dates']);
-            $blood_glucose=implode(",",$_SESSION['blood_glucose']);
-            $blood_glucose_dates=implode(",",$_SESSION['blood_glucose_dates']);
-
             ?>
-          <a href="../../reports/vital_report.php?obj=<?php print_r($vitalData)?>" onclick='top.restoreSession();vitaldata();'>
+          <a href="../../reports/vital_report.php?pid=<?php echo $pid?>" onclick='top.restoreSession();vitaldata();'>
             
             
             <?php if($grow['gl_value'])echo xlt('Vitals Report'); 
@@ -1991,3 +1947,4 @@ checkSkipConditions();
 
 </body>
 </html>
+

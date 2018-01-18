@@ -10,7 +10,25 @@ header('Content-Type: text/xml');
 ?>
  <Response>
     <Message>
-        Thank you for your Response
+        <?php
+          $checkResponse = preg_replace('/[^0-9]+/', '', $body);
+          echo $checkResponse;
+          if($checkResponse)
+          {
+             ?>Thanks For your Response <?php
+          }
+          else
+          {
+              ?>These are following acceptable response format
+                blood glucose :124
+                blood pressure : 120/80
+                bp:120/80
+                120/80
+                124
+              <?php
+          }
+      ?>
+        
     </Message>
 </Response>
 
