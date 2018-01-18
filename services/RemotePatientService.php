@@ -101,10 +101,7 @@ class RemotePatientService
        
         $getglucse = preg_replace('/[^0-9]+/', '', $body);
         echo  $getglucse;
-        $bloodsuger=SqlStatement(" select blood_glucose  from form_vitals");
-        if(!isset($bloodsuger)){
-        SqlStatement("ALTER TABLE form_vitals ADD blood_glucose VARCHAR(255);");
-        }
+        
         $sql="insert into form_vitals set pid=?,blood_glucose=?,date=?";
         $result = SqlStatement($sql,array($pid,$getglucse,$date));
         
