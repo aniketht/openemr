@@ -14,14 +14,14 @@ class RemotePatientService
     {
    
     }
-    public function SendSMSPatient()
+    public function SendSMSPatient($AccountSid,$AuthToken,$TwilioNumber)
     {
      
        $test= date('m/d/Y h:i:s a', time());
        $currentTime=(new DateTime($test))->format("H");
        $result = SqlStatement("select * from remote_patient_vital_alert_jobs");
-       $AccountSid = "AC7067cb055c712a625ead0fde5618d876";
-       $AuthToken = "70d578bdc97028bffa482e67174d3ef0";
+       $AccountSid = $AccountSid;
+       $AuthToken = $AuthToken;
        while ($row = sqlFetchArray($result)) {
    
          $client = new Client($AccountSid, $AuthToken);
@@ -45,7 +45,7 @@ class RemotePatientService
 
             array(
                 
-                'from' => "+14129064618", 
+                'from' =>$TwilioNumber, 
                 
                 
                 'body' => "Hey , Please submit your blood pressure records"

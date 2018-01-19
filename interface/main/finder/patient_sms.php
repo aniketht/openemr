@@ -12,9 +12,10 @@ use Twilio\Rest\Client;
 require "Twilio/autoload.php";
 
 require_once(dirname(__FILE__) ."/../../globals.php");
+require_once(dirname(__FILE__) ."/../../TwilioConfig.php");
 
-$AccountSid = "AC7067cb055c712a625ead0fde5618d876";
-$AuthToken = "70d578bdc97028bffa482e67174d3ef0";
+$AccountSid = $AccountSid;
+$AuthToken = $AuthToken;
 $popup = empty($_REQUEST['popup']) ? 0 : 1;
 
 // Generate some code based on the list of columns.
@@ -51,7 +52,7 @@ $patientNumber = str_replace(' ', '', $cellNumber);
 
             array(
                 
-                'from' => "+14129064618", 
+                'from' => $TwilioNumber, 
                 
                 
                 'body' => "Hey , Please submit your blood pressure records"
