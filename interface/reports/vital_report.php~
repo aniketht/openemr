@@ -1,63 +1,22 @@
 <?php
 require_once("../globals.php");
+include("../../services/RemotePatientService.php");
 
 $time=$_POST['time'];
 $type=$_POST['type'];
 $id=$_POST['id'];
 $test= date('m/d/Y h:i:s a', time());
 $pid=$_GET['pid'];
-$res = sqlStatement("SELECT * FROM form_vitals WHERE pid=".$pid);
-$bps=array();
-$bpd=array();
-$dates=array();
-$book = new stdClass;
-while ($row = sqlFetchArray($res))
-{ 
-  array_push($vitalData,$row);
-  $books = (object) $row;
-  array_push($bps,$row['bps']);
-  array_push($bpd,$row['bpd']);
-  array_push($dates,$row['date']);
-}
-$getGlucoseRecords=sqlStatement("SELECT * FROM form_vitals WHERE pid=".$pid);
-$blood_glucose=array();
-$blood_glucose_dates=array();
-while ($Glucoserow = sqlFetchArray($getGlucoseRecords))
-{
-    if(isset($Glucoserow['blood_glucose']))
-    {
-      array_push($blood_glucose,$Glucoserow['blood_glucose']);
-      array_push($blood_glucose_dates,$Glucoserow['date']);
-    }
-               
-}
-$blood_glucose;
-$blood_glucose_dates;
-          
-$currentTime=(new DateTime($test))->format("H");
-if(isset($id))
-{
-$phone_number=sqlStatement("select phone_cell from patient_data where id=".$id);
-$row = sqlFetchArray($phone_number);
-
-sqlStatement("INSERT INTO remote_patient_vital_alert_jobs(patient_id, collection_time,phone_number,request_type) VALUES (?, ?,?,?)",array($_POST[id],$_POST[time],$row[phone_cell],$_POST[type]));
-$getResponse=sqlStatement("select * from remote_patient_vital_alert_jobs");
-while($eachrow = sqlFetchArray($getResponse))
-{
-     if($eachrow['collection_time']==$currentTime)
-     {
-        
-     }
-
-}
+$RemotePatient = new RemotePatientService();
+$Multiarray=$RemotePatient->VitalReport($pid,$time,$type,$id,$test);
+$bps=$Multiarray['bps'];
+$bpd=$Multiarray['bpd'];
+$dates=$Multiarray['dates'];
+$blood_glucose=$Multiarray['blood_glucose'];
+$blood_glucose_dates=$Multiarray['blood_glucose_dates'];
 
 
 
-}
-else
-{
-  
-}
 ?>
 <html>
 <head>

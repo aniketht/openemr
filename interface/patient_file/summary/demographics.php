@@ -725,7 +725,7 @@ if ($GLOBALS['patient_id_category_name']) {
 
            
             ?>
-          <a href="../../reports/vital_report.php?pid=<?php echo $pid?>" onclick='top.restoreSession();vitaldata();'>
+          <a href="../../reports/vital_report.php?pid=<?php echo $pid?>" onclick='top.restoreSession();'>
             
             
             <?php if($grow['gl_value'])echo xlt('Vitals Report'); 

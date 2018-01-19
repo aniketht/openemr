@@ -89,7 +89,7 @@ class RemotePatientService
     
      $pid=$row['id'];
      
-     if(isset($bps) && isset($bpd))
+     if(isset($bps) && isset($bpd) && $bps>0 && $bpd>0)
      {
 
        $sql="insert into form_vitals set pid=?,bps=?,bpd=?,date=?";
@@ -125,6 +125,58 @@ class RemotePatientService
         
      }
 
+ }
+  public function VitalReport($pid,$time,$type,$id,$test)
+   {
+        $res = sqlStatement("SELECT * FROM form_vitals WHERE pid=?",array($pid));
+        $bps=array();
+        $bpd=array();
+        $dates=array();
+        while ($row = sqlFetchArray($res))
+       { 
+         if($row['bps']>0 && $row['bpd']>0)
+        {
+         array_push($bps,$row['bps']);
+         array_push($bpd,$row['bpd']);
+         array_push($dates,$row['date']);
+        }
+       }
+      $getGlucoseRecords = sqlStatement("SELECT * FROM form_vitals WHERE pid=?",array($pid));
+      $blood_glucose=array();
+      $blood_glucose_dates=array();
+      while ($Glucoserow = sqlFetchArray($getGlucoseRecords))
+     {
+         if(isset($Glucoserow['blood_glucose']))
+       {
+         
+         array_push($blood_glucose,$Glucoserow['blood_glucose']);
+         array_push($blood_glucose_dates,$Glucoserow['date']);
+       }
+               
+     }
+     $currentTime=(new DateTime($test))->format("H");
+    if(isset($id))
+    {
+        $phone_number=sqlStatement("select phone_cell from patient_data where id=?",array($pid));
+        $row = sqlFetchArray($phone_number);
+         sqlStatement("INSERT INTO remote_patient_vital_alert_jobs(patient_id, collection_time,phone_number,request_type) VALUES (?, ?,?,?)",array($id,$time,$row[phone_cell],$type));
+        $getResponse=sqlStatement("select * from remote_patient_vital_alert_jobs");
+      
+     }
+    else
+    {
+  
+    }
+
+    
+  return array(
+    'bps' => $bps,
+    'bpd' => $bpd,
+    'dates' => $dates,
+    'blood_glucose'=>$blood_glucose,
+    'blood_glucose_dates'=>$blood_glucose_dates
+     
+);
  }
 
     
