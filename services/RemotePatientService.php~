@@ -83,7 +83,7 @@ class RemotePatientService
      }
      
      $date = date('Y/m/d H:i:s');
-     $result = SqlStatement("select * from patient_data where phone_cell=".$number);
+     $result = SqlStatement("select * from patient_data where phone_cell=?",array($number));
      
      $row = sqlFetchArray($result);
     
