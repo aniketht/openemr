@@ -19,7 +19,11 @@ $colcount = 0;
 $header0 = "";
 $header  = "";
 $coljson = "";
-$res = sqlStatement("SELECT DISTINCT fv.pid,fv.date,pd.fname,pd.lname,pd.phone_cell,pd.id FROM form_vitals fv inner join patient_data pd on fv.pid=pd.id order by fv.date ");
+$res = sqlStatement("SELECT DISTINCT fv.pid,fv.date,pd.fname,fv.bpd,fv.bps,pd.lname,pd.phone_cell,pd.id FROM form_vitals fv inner join patient_data pd on fv.pid=pd.id order by fv.date ");
+$gvalue=sqlStatement("SELECT * FROM globals WHERE gl_name='remote_patient'");
+$grow = sqlFetchArray($gvalue);
+
+$_SESSION['remote_patient']=$grow['gl_value'];
 while ($row = sqlFetchArray($res)) {
   
     //echo $row[fname];
@@ -32,18 +36,18 @@ while ($row = sqlFetchArray($res)) {
 ?>
 
 <html>
-<title>Patient List</title>
-<strong>Patient List</strong>
-<a href="http://127.0.0.1:8000//interface/main/finder/patient_sms.php"  class="btn btn-default pull-right" style="margin-top: 26px;margin-bottom: 9px;margin-right: 8px;" role="button">Notify All Patient</a>
+<title><?php echo xl('Patient List') . ' '; ?></title>
+<strong><?php echo xl('Patient List') . ' '; ?></strong>
+<!-- <a href="http://127.0.0.1:8000//interface/main/finder/patient_sms.php"  class="btn btn-default pull-right" style="margin-top: 26px;margin-bottom: 9px;margin-right: 8px;" role="button">Notify All Patient</a> -->
 <a href="http://127.0.0.1:8000/interface/new/new.php" class="btn btn-default pull-right" style="margin-top: 26px;margin-bottom: 9px;margin-right: 8px;" role="button">Add Patient</a>
 <table id="example" class="display" cellspacing="0" width="100%">
 					<thead>
 						<tr>
-							<th>Name</th>
-							<th>Phone Number</th>
-							<th>Unique Number</th>
-							<th>Latest data</th>
-							<th>Edit</th>
+							<th><?php echo xl("Name").'';;?></th>
+							<th><?php echo xl("Phone Number").'';?></th>
+							<th><?php echo xl("Unique Number").'';?></th>
+							<th id="ldata"><?php echo xl("Latest data").'';?></th>
+							<th><?php echo xl("Edit").'';?></th>
 							
 						</tr>
 					</thead>
@@ -52,12 +56,13 @@ while ($row = sqlFetchArray($res)) {
 
 					<tbody>
 						<?php
-						 $res = sqlStatement("select distinct pd.id,fv.date,pd.fname,pd.lname,pd.phone_cell from patient_data pd left outer join form_vitals fv on fv.pid=pd.id and fv.date=(select max(fv.date) From form_vitals fv where fv.pid=pd.id);");
+						 $res = sqlStatement("select distinct pd.id,fv.date,pd.fname,fv.bpd,fv.bps,pd.lname,pd.phone_cell from patient_data pd left outer join form_vitals fv on fv.pid=pd.id and fv.date=(select max(fv.date) From form_vitals fv where fv.pid=pd.id AND fv.bps!='NULL' AND fv.bpd!='NULL');");
                         
                          while ($row = sqlFetchArray($res)) {
                            if(!isset($row["date"]))
                            {
-                           	$row["date"]="NA";
+                           	$row["date"]="<i style='color:red'>NA";
+                            $NotifyButton='<a href="http://127.0.0.1:8000/interface/main/finder/patient_sms.php?phone_number='.$row['phone_cell'].' ">Notify</a>';
                            }
                            else{
                                
@@ -66,15 +71,31 @@ while ($row = sqlFetchArray($res)) {
                                //$datetime2 = strtotime(date("Y-m-d H:i:s"));
                               // $diff=$datetime2-$datetime1;
                                 //$row["date"]=($diff/(60*60)) .'Hours ago';
-                               
+                            $date1 = date_create($row["date"]);
+                            $date2 = date_create(date("Y-m-d H:i:s"));
+                            $diff = date_diff($date1,$date2);
+                            
+
+                            $row["date"] =$diff->d." "."days"." ".$hour = $diff->h." "."hours"." "."ago"." ";
+                            $compareDays=$diff->d;
+                            if($compareDays>1)
+                            {
+                              $NotifyButton='<a href="http://127.0.0.1:8000/interface/main/finder/patient_sms.php?phone_number='.$row['phone_cell'].' ">Notify</a>';
+                            }
+                            else
+                            {
+                              $NotifyButton="";
+                            }
+
+
                                
                            }
                            echo '  
                                <tr>  
-                                    <td>'.$row["fname"].$row["lname"].'</td>  
+                                    <td>'.$row["fname"]." ".$row["lname"].'</td>  
                                     <td>'.$row["phone_cell"].'</td>  
                                     <td>'.$row["id"].'</td>  
-                                    <td>BP '.$row["date"].'</td>  
+                                    <td class="hidevalues">BP : '.$row["bps"].'/'.$row["bpd"]."        ". $row["date"]."  ".$NotifyButton.'</td>  
                                    <td><a href=../../patient_file/summary/demographics.php?set_pid='.$row["id"].' class="btn btn-default"  role="button">Edit Patient</a></td>
 							
                                </tr>  
@@ -112,7 +133,17 @@ $(document).ready(function() {
 function applyDataTable(){
  
  $(document).ready(function() {
+
     $('#example').DataTable();
+    localStorage.setItem('remote_patient', '<?php echo $_SESSION['remote_patient'];?>');
+    var remotevalue=localStorage.getItem('remote_patient');
+    if(remotevalue!=1)
+    {
+      
+      $(".hidevalues").hide();
+      $("#ldata").hide();
+     }
+     
 } );
 }
 

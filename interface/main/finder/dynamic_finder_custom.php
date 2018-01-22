@@ -36,18 +36,18 @@ while ($row = sqlFetchArray($res)) {
 ?>
 
 <html>
-<title>Patient List</title>
-<strong>Patient List</strong>
+<title><?php echo xl('Patient List') . ' '; ?></title>
+<strong><?php echo xl('Patient List') . ' '; ?></strong>
 <!-- <a href="http://127.0.0.1:8000//interface/main/finder/patient_sms.php"  class="btn btn-default pull-right" style="margin-top: 26px;margin-bottom: 9px;margin-right: 8px;" role="button">Notify All Patient</a> -->
 <a href="http://127.0.0.1:8000/interface/new/new.php" class="btn btn-default pull-right" style="margin-top: 26px;margin-bottom: 9px;margin-right: 8px;" role="button">Add Patient</a>
 <table id="example" class="display" cellspacing="0" width="100%">
 					<thead>
 						<tr>
-							<th>Name</th>
-							<th>Phone Number</th>
-							<th>Unique Number</th>
-							<th id="ldata">Latest data</th>
-							<th>Edit</th>
+							<th><?php echo xl("Name").'';;?></th>
+							<th><?php echo xl("Phone Number").'';?></th>
+							<th><?php echo xl("Unique Number").'';?></th>
+							<th id="ldata"><?php echo xl("Latest data").'';?></th>
+							<th><?php echo xl("Edit").'';?></th>
 							
 						</tr>
 					</thead>

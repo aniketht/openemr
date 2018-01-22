@@ -38,7 +38,7 @@ $blood_glucose_dates=$Multiarray['blood_glucose_dates'];
 <form method="post" name="vital_form" action="../reports/vital_report.php?pid=<?php echo $pid; ?>">
 
     <div class="form-group col-sm-3 ">
-      <label for="time">Collection Time</label>
+      <label for="time"><?php echo xl('Collection Time') . ' ';?></label>
       <span class="input">
       <select class="form-control" name="time" id="time"  >
   <option value="0">00</option>
@@ -69,13 +69,13 @@ $blood_glucose_dates=$Multiarray['blood_glucose_dates'];
       </select>
       <input type="hidden" name="id" id="id">
       <br>
-      <label for="type">Collection type</label>
+      <label for="type"><?php echo xl('Collection type') . ' ';?></label>
       <select class="form-control" id="type" name="type">
-        <option value="BP">Blood Pressure</option>
+        <option value="BP"><?php echo xl('Blood Pressure') . ' ';?></option>
         
       </select>
       <br>
-      <button type="submit" class="btn btn-default">Save</button>
+      <button type="submit" class="btn btn-default"><?php echo xl('Save') . ' ';?></button>
     </div>
   </form>
 
